@@ -1,13 +1,21 @@
 "use strict"
-var products = [{
-        name : "test",
-        price : 12.9,
-        inventory : 20
-    }, {
-        name : "test2",
-        price : 30,
-        inventory : 80
-    }],
+var products = [
+        {
+            name : "Ballantine's ",
+            price : 999,
+            inventory : 20
+        },
+        {
+            name : "Bell's Original",
+            price : 199,
+            inventory : 80
+        },
+        {
+            name : "Black Jack Silver",
+            price : 94,
+            inventory : 80
+        },
+    ],
    orders = [];
 
 
@@ -30,7 +38,6 @@ class ProductlineItemContainer {
 	getTotalPrice(){
 		var sum = 0;
 		for(let i = 0; i < this.productLineItems.length; i ++) {
-			console.log(sum);
 			sum += this.productLineItems[i].total;
 		}
 		return sum;
@@ -38,8 +45,11 @@ class ProductlineItemContainer {
 }
 
 class Order extends ProductlineItemContainer {
-	constructor(basket) {
+	constructor(basket,client) {
+        super();
+        this.client=client;
 		this.productLineItems = basket.productLineItems;
+        this.status="placed";
 	}
 	setStatus(status) {
 		this.status = status;
@@ -56,26 +66,37 @@ class Basket extends ProductlineItemContainer {
 		return this;
 	}
 	removeProduct(productID){
-		for(let i = 0; i < this.productLineItems; i++) {
-			if(this.productLineItems[i].product.id == productID) {
-				delete this.productLineItems[i];
-				break;
-				break;
-			}
-		}
-		return this;
+        this.productLineItems.splice(productID,1);
+        return this;
 	}
 	updateProductQuantity(productID, qty) {
 		for(let i = 0; i < this.productLineItems; i++) {
 			if(this.productLineItems[i].product.id == productID) {
+                console.log(qty);
 				this.productLineItems[i].updateQty(qty);
 			}
 		}
 	}
-	
-	placeOrder() {
-		var order = new Order(this);
-		delete this;
+	has(id)
+    {
+        let items=this.productLineItems;
+        for(let i in items)
+        {
+            if(products[id]==items[i].product)return true;
+        }
+        return false;
+    }
+    find(id)
+    {
+        let items=this.productLineItems;
+        for(let i in items)
+        {
+            if(items[i].product==products[id])return items[i];
+        }
+        return null;
+    }
+	placeOrder(client) {
+		var order = new Order(this,client);
 		orders.push(order);
 		return order;
 	}
