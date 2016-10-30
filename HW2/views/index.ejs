@@ -1,14 +1,15 @@
-<html>
-	<head>
-		<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
-		<script src="/socket.io/socket.io.js"></script>
-		<script src="js/index.js"></script>
-		
-		<link rel="stylesheet" type="text/css" href="css/style.css">
-	</head>
-	
-	<body>
-		<div class="left">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The best shop-basket</title>
+    <script type="text/javascript" src="js/jquery.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="js/index.js"></script>		
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+    <div class="left">
 		<% for(var i = 0; i < products.length; i++) {%>
 			<div class="product-container border">
 				<h2>
@@ -21,13 +22,23 @@
 				<button data-product-id="<%=i%>" class="js_add-to-cart">Add to Cart</button>
 			</div>
 		<% } %>
+	</div>
+	<div class="basket-container left border">    
+        <h2>Basket</h2>
+		<div class="basket-items">
+		
 		</div>
-		<div class="basket-container left border">
-			<h2>Basket</h2>
-			<div class="product-line-items">
-			<div>
-			<button class="js_place-order hide">
-				Place Order
-			</button>
+		<button class="js_place-order hide">
+		    Place Order
+		</button>
+	</div>
+</body>
+</html>
+<html>
+	
+	<body>
+
+		
+
 		</div>
 </html>
