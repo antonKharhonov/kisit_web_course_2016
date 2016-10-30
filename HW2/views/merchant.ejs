@@ -1,6 +1,7 @@
 <html>
+<title>Merchant</title>
 	<head>
-		<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+		<script type="text/javascript" src="js/jquery.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="js/merchant.js"></script>
 		
@@ -9,28 +10,32 @@
 	
 	<body>
 		<div class="left">
+		    <div class="products">
 			<% for(var i = 0; i < products.length; i++) {%>
-				<div class="product-container border">
+				<div data-product-id="<%= i %>" class="product-container border">
+				    <span>Name:</span>
 					<div>
-						<input value="<%=products[i].name%>" name="product_<%=i%>_name" type="text"/>
+						<input value="<%=products[i].name%>" name="product_name" type="text"/>
 					</div>
 					<div>
 						<span>Price:</span>
-						<input value="<%=products[i].price%>" name="product_<%=i%>_price" type="text"/>
+						<input value="<%=products[i].price%>" name="product_price" type="text"/>
 					</div>
 					<div>
 						<span>inventory:</span>
-						<input value="<%=products[i].inventory%>" name="product_<%=i%>_inventory" type="text"/>
+						<input value="<%=products[i].inventory%>" name="product_inventory" type="text"/>
 					</div>
 					<div class="product-buttons">
-						<button class="js_update-product">Update</button>
-						<button class="js_remove-product">Remove</button>
+						<button class="update">Update</button>
+						<button class="remove">Remove</button>
 					</div>
 				</div>
 			<% } %>
+			</div>
 			<div class="product-container border new-product-container">
+					<span>Name:</span>
 					<div>
-						<input value="" name="product_new_price" type="text"/>
+						<input value="" name="product_new_name" type="text"/>
 					</div>
 					<div>
 						<span>Price:</span>
@@ -41,20 +46,41 @@
 						<input value="" name="product_new_inventory" type="text"/>
 					</div>
 					<div class="product-buttons">
-						<button class="js_add-product">Add</button>
+						<button class="add">Add</button>
 					</div>
 				</div>
 			
 		</div>
 		<div class="orders-container left border">
 			<h2>Orders</h2>
-			<% for(var i = 0; i < orders.length; i++) {%>
-				<div class="order">
-					<div>
-						<span>Total price</span>
-						<span><%=orders[i].getTotalPrice()%></span>
-					</div>
-				</div>
-			<%}%>
+			<div class="orders-items">
+                <% for(var i = 0; i < orders.length; i++) {%>
+                    <div class="order" data-order-id="<%=i %>">
+                        <strong>Client:<%=orders[i].client%></strong>
+                        <br>
+                        <span>
+                            <span>Total price</span>
+                            <span><%=orders[i].getTotalPrice()%></span>
+                        </span>
+                        <div class="action">
+                            <select name="" id="">
+    				<option <%=orders[i].status=="placed"?"selected":null %> value="placed">placed</option>
+    				<option <%=orders[i].status=="delivered"?"selected":null %> value="delivered">delivered</option>
+    				<option <%=orders[i].status=="cancelled"?"selected":null %> value="cancelled">cancelled</option>
+                            </select>
+                        </div>
+                        <div style="clear:both"></div>
+                        <ul>
+                        <% for(var j=0;j<orders[i].productLineItems.length;j++){%>
+                            <li>
+                                <%=orders[i].productLineItems[j].product.name%>
+                                (<%=orders[i].productLineItems[j].qty%>):
+                                <%=orders[i].productLineItems[j].total%>
+                            </li>  
+                        <%}%>
+                        </ul>
+                    </div>
+                <%}%>
+			</div>
 		</div>
 </html>
