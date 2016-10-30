@@ -1,3 +1,6 @@
+body{
+    font-family: Helvetica;
+}
 .hide {
 	display:none;
 }
@@ -17,9 +20,14 @@
 .basket-container,.orders-container {
 	margin: 5px;
 	min-height: 100px;
-	width : 200px;
+	min-width : 200px;
+    padding:5px;
 }
-
+.basket-container{
+    position:fixed;
+    top:0px;
+    right:0px;
+}
 h2{
 text-align : center;
 }
@@ -30,4 +38,17 @@ text-align : center;
 
 .new-product-container{
 	background-color:#ececec
+}
+.basket-item{
+    margin-top:5px;
+}
+div.action{
+    float:right;
+}
+.basket-item div.action input[type="number"]{
+    width:40px;
+}
+ul{
+    list-style: none;
+    margin:0px;
 }
