@@ -46,7 +46,7 @@ $(document).ready(function(){
             $('.orders-items').append(html);
         }
     });
-    $('body').delegate('.product-container button.update','click',function(e){
+    $('.products').on('click','.product-container button.update',function(e){
         let parent=$(this).parents('.product-container'),
             name=parent.find('input[name="product_name"]').val(),
             price=parent.find('input[name="product_price"]').val(),
@@ -59,13 +59,13 @@ $(document).ready(function(){
             pid:pid
         });
     })
-    $('body').delegate('.product-container button.remove','click',function(e){
+    $('.products').on('click','.product-container button.remove',function(e){
         $(this).parents('.product-container').remove();
         socket.emit('deleteProduct',{
             pid:$(this).parents('.product-container').data('product-id')
         })
     })
-    $('body').delegate('.new-product-container button.add','click',function(e){
+    $('.new-product-container').on('click','button.add',function(e){
         let parent=$(this).parents('.new-product-container'),
             name=parent.find('input[name="product_new_name"]'),
             price=parent.find('input[name="product_new_price"]');
@@ -80,7 +80,7 @@ $(document).ready(function(){
         inventory.val('');
         name.focus();
     });
-    $('body').delegate('.order .action select','change',function(e){
+    $('.order-container').on('change','.order .action select',function(e){
         socket.emit('changeStatus',{
             pid:$(this).parents('.order').data('order-id'),
             status:$(this).val()
