@@ -1,91 +1,45 @@
 $(document).ready(function(){
-    let socket = io('http://localhost:3000/merchant');
-    socket.on('addProduct',function(data){
-        let html='<div data-product-id="'+data.pid+'" class="product-container border"><span>Name:</span><div><input value="'+data.product.name+'" name="product_name" type="text"/></div><div><span>Price:</span><input value="'+data.product.price+'" name="product_price" type="text"/></div><div><span>inventory:</span><input value="'+data.product.inventory+'" name="product_inventory" type="text"/></div><div class="product-buttons"><button class="update">Update</button><button class="remove">Remove</button></div></div>';
-        $('.left .products').append(html);
-    }).on('order_merch',function(data){
-        console.log(data);
-        let html='';
-		$('.orders-items').html('');
-        for(let i in data.orders)
-        {
-            let item=data.orders[i],
-                sum=0;
-            for(let j in item.productLineItems)
-            {
-                sum+=item.productLineItems[j].total;
-            }
-            html='';
-            html+='<div class="order" data-order-id="'+i+'">';
-            html+='<strong>Client: '+item.client+'</strong>';
-            html+='<br>';
-            html+='<span>';
-            html+='<span>Total price:</span>';
-            html+='<span>'+sum+'</span>';
-            html+='</span>';
-            html+='<div class="action">'
-            html+='<select name="" id="">'
-            html+='<option '+(item.status=="placed"?"selected":null)+' value="placed">placed</option>'
-            html+='<option '+(item.status=="delivered"?"selected":null)+'  value="delivered">delivered</option>'
-            html+='<option '+(item.status=="cancelled"?"selected":null)+'  value="cancelled">cancelled</option>'
-            html+='</select>'
-            html+='</div>'
-            html+='<div style="clear:both"></div>';
-            html+='<ul>';
-            for(let j in item.productLineItems)
-            {
-                html+='<li>';
-                html+=item.productLineItems[j].product.name;
-                html+='('+item.productLineItems[j].qty+'):';
-                html+=item.productLineItems[j].total;
-                html+='</li>';
-            }
-            html+='</ul>';
-            html+='</div>';
-
-            $('.orders-items').append(html);
-        }
-    });
-    $('body').delegate('.product-container button.update','click',function(e){
-        let parent=$(this).parents('.product-container'),
-            name=parent.find('input[name="product_name"]').val(),
-            price=parent.find('input[name="product_price"]').val(),
-            inventory=parent.find('input[name="product_inventory"]').val(),
-            pid=parent.data('product-id');
-        socket.emit('editProduct',{
-            name:name,
-            price:price,
-            inventory:inventory,
-            pid:pid
-        });
-    })
-    $('body').delegate('.product-container button.remove','click',function(e){
-        $(this).parents('.product-container').remove();
-        socket.emit('deleteProduct',{
-            pid:$(this).parents('.product-container').data('product-id')
-        })
-    })
-    $('body').delegate('.new-product-container button.add','click',function(e){
-        let parent=$(this).parents('.new-product-container'),
-            name=parent.find('input[name="product_new_name"]'),
-            price=parent.find('input[name="product_new_price"]');
-            inventory=parent.find('input[name="product_new_inventory"]');
-        socket.emit('addProduct',{
-            name:name.val(),
-            price:price.val(),
-            inventory:inventory.val(),
-        });
-        name.val('');
-        price.val('');
-        inventory.val('');
-        name.focus();
-    });
-    $('body').delegate('.order .action select','change',function(e){
-        socket.emit('changeStatus',{
-            pid:$(this).parents('.order').data('order-id'),
-            status:$(this).val()
-        })
-    })
+    let socket = io('http://localhost:3000');
     
+    
+    socket.on("productAdded", function(data){
+        let basket=$('.basket-items'),
+            products=data.basket.productLineItems;
+        basket.html('');
+        $('.js_place-order').removeClass('hide');
+        for(let i in products)
+        {
+            let product=products[i];
+            basket.append('<div id="'+i+'" class="basket-item">'+product.product.name+': <span class="total">'+product.total+'</span> <div class="action"><input type="number" min="1"  max="100" value="'+product.qty+'"><button class="delete">X</button></div><div style="clear:both"></div></div>');
+        }
+        basket.append('<hr>');
+        basket.append('Total: <span class="total_t">'+data.total+'</span>');
+    }).on('productEdited',function(data){
+        $('.basket-item#'+data.pid).find('span.total').text(data.item.total);
+        $('span.total_t').text(data.total);
+    });
+    
+    
+    $(".js_add-to-cart").on("click", function(){
+	   socket.emit("addProduct", {
+		pid : $(this).data("productId")
+        });
+	});
+    $('body').on('change','.basket-item input',function(e){
+       socket.emit("editProduct",{
+           pid:$(this).parents('.basket-item').attr('id'),
+           count:parseInt($(this).val())
+       })
+    }).on('click','.basket-item button.delete',function(){
+        socket.emit("deleteProduct",{
+           pid:$(this).parents('.basket-item').attr('id'),
+        })
+    }).on('click','.basket-container button.js_place-order',function(e){
+        socket.emit('order');
+        $('.basket-items').html('');
+        $('.js_place-order').addClass('hide');
+    })
+
+
 })
 
